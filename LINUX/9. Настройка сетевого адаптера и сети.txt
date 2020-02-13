@@ -1,11 +1,11 @@
-Õ¿—“–Œ… ¿ ƒ»Õ¿Ã»◊≈— Œ√Œ IP
+Ôªø–ù–ê–°–¢–†–û–ô–ö–ê –î–ò–ù–ê–ú–ò–ß–ï–°–ö–û–ì–û IP
 
 nano /etc/network/interfaces.d/*
 
 auto eth0
 iface eth0 inet dhcp
 
-Õ¿—“–Œ… ¿ —“¿“»◊≈— Œ√Œ IP ¿ƒ–≈—¿
+–ù–ê–°–¢–†–û–ô–ö–ê –°–¢–ê–¢–ò–ß–ï–°–ö–û–ì–û IP –ê–î–†–ï–°–ê
 
 iface eth0 inet static
 address 192.168.1.15
@@ -14,6 +14,6 @@ gateway 192.168.1.1
 broadcast 192.168.0.255
 dns-nameserver 8.8.8.8
 
-œ≈–≈«¿√–”« ¿ —≈“»
+–ü–ï–†–ï–ó–ê–ì–†–£–ó–ö–ê –°–ï–¢–ò
 
 sudo systemctl restart networking

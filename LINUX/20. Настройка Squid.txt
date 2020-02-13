@@ -1,12 +1,12 @@
-Установим прокси-сервер Squid3
+п»їРЈСЃС‚Р°РЅРѕРІРёРј РїСЂРѕРєСЃРё-СЃРµСЂРІРµСЂ Squid3
 
 apt-get install squid3 apache2-utils
 
-На всякий случай делаем резервную копию файла настроек squid3
+РќР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ РґРµР»Р°РµРј СЂРµР·РµСЂРІРЅСѓСЋ РєРѕРїРёСЋ С„Р°Р№Р»Р° РЅР°СЃС‚СЂРѕРµРє squid3
 
 /etc/squid# cp squid.conf squid.conf.default
 
-Редактируем файл конфигурации пркси сервера Squid3 до такого вида
+Р РµРґР°РєС‚РёСЂСѓРµРј С„Р°Р№Р» РєРѕРЅС„РёРіСѓСЂР°С†РёРё РїСЂРєСЃРё СЃРµСЂРІРµСЂР° Squid3 РґРѕ С‚Р°РєРѕРіРѕ РІРёРґР°
 
 vim /etc/squid/squid.conf
 
@@ -14,7 +14,7 @@ http_port 3128
 
 dns_nameservers 208.67.222.222 208.67.220.220
 
-# авторизация, подробности ниже
+# Р°РІС‚РѕСЂРёР·Р°С†РёСЏ, РїРѕРґСЂРѕР±РЅРѕСЃС‚Рё РЅРёР¶Рµ
 auth_param basic program /usr/lib/squid3/basic_ncsa_auth /etc/squid3/passwd
 auth_param basic children 5 startup=5 idle=1
 auth_param basic realm Welcome to Free VPN Proxy Master
@@ -22,7 +22,7 @@ auth_param basic credentialsttl 2 hours
 
 acl all src all
 acl Users proxy_auth REQUIRED
-# пускать товарища с этого ip без пароля
+# РїСѓСЃРєР°С‚СЊ С‚РѕРІР°СЂРёС‰Р° СЃ СЌС‚РѕРіРѕ ip Р±РµР· РїР°СЂРѕР»СЏ
 acl KnownUsers src "/etc/squid3/KnownUsers.acl"
 
 acl SSL_ports port 443 # https
@@ -45,7 +45,7 @@ acl Safe_ports port 901 # SWAT
 acl purge method PURGE
 acl CONNECT method CONNECT
 
-# доступ только с доверенных ip или по паролю
+# РґРѕСЃС‚СѓРї С‚РѕР»СЊРєРѕ СЃ РґРѕРІРµСЂРµРЅРЅС‹С… ip РёР»Рё РїРѕ РїР°СЂРѕР»СЋ
 http_access allow KnownUsers
 http_access allow Users
 
@@ -55,7 +55,7 @@ http_access deny CONNECT !SSL_ports
 http_access deny all
 icp_access deny all
 
-# превращаем squid в анонимный прокси
+# РїСЂРµРІСЂР°С‰Р°РµРј squid РІ Р°РЅРѕРЅРёРјРЅС‹Р№ РїСЂРѕРєСЃРё
 forwarded_for off
 header_access From deny all
 header_access Server deny all
@@ -68,18 +68,18 @@ header_access Link deny all
 header_access X-Forwarded-For deny all
 header_access Via deny all
 header_access Cache-Control deny all
-# отправять URL источника запроса, многие сайты без него ведут себя некорректно. При параноидальном подходе следует использовать
+# РѕС‚РїСЂР°РІСЏС‚СЊ URL РёСЃС‚РѕС‡РЅРёРєР° Р·Р°РїСЂРѕСЃР°, РјРЅРѕРіРёРµ СЃР°Р№С‚С‹ Р±РµР· РЅРµРіРѕ РІРµРґСѓС‚ СЃРµР±СЏ РЅРµРєРѕСЂСЂРµРєС‚РЅРѕ. РџСЂРё РїР°СЂР°РЅРѕРёРґР°Р»СЊРЅРѕРј РїРѕРґС…РѕРґРµ СЃР»РµРґСѓРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ
 ##header_access Referer deny all
 
 coredump_dir /var/spool/squid3
 
-# Отключаем дисковый кэш полностью
+# РћС‚РєР»СЋС‡Р°РµРј РґРёСЃРєРѕРІС‹Р№ РєСЌС€ РїРѕР»РЅРѕСЃС‚СЊСЋ
 cache_mem 8 MB
 cache_dir null /tmp
 cache deny all
 shutdown_lifetime 5 seconds
 
-# обрезаем логи, хранить лишнюю информацию о нас не нужно
+# РѕР±СЂРµР·Р°РµРј Р»РѕРіРё, С…СЂР°РЅРёС‚СЊ Р»РёС€РЅСЋСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РЅР°СЃ РЅРµ РЅСѓР¶РЅРѕ
 access_log none all
 cache_store_log none
 
@@ -89,6 +89,6 @@ refresh_pattern -i (/cgi-bin/|\?) 0 0% 0
 refresh_pattern (Release|Packages(.gz)*)$ 0 20% 2880
 refresh_pattern . 0 20% 4320
 
-Запускаем squid3
+Р—Р°РїСѓСЃРєР°РµРј squid3
 
 /etc/squid# service squid restart

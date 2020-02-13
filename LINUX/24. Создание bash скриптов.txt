@@ -1,9 +1,9 @@
-!/bin/bash
+п»ї!/bin/bash
 echo "Hello world"
 
 vi script
 chmod u+x script
-./script (должен вывести)
+./script (РґРѕР»Р¶РµРЅ РІС‹РІРµСЃС‚Рё)
 
 
 !/bin/bash
@@ -12,4 +12,4 @@ string2=world
 string=$string1$string2
 echo $string
 
-то же самое
+С‚Рѕ Р¶Рµ СЃР°РјРѕРµ

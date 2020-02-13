@@ -1,4 +1,4 @@
-устанавливаем и запускаем chrony
+п»їСѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј Рё Р·Р°РїСѓСЃРєР°РµРј chrony
 
 apt-get install chrony
 
@@ -6,39 +6,39 @@ systemctl enable chrony
 
 systemctl start chrony
 
-Если используется брандмауэр, необходимо открыть порты TCP/UDP 514.
+Р•СЃР»Рё РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ Р±СЂР°РЅРґРјР°СѓСЌСЂ, РЅРµРѕР±С…РѕРґРёРјРѕ РѕС‚РєСЂС‹С‚СЊ РїРѕСЂС‚С‹ TCP/UDP 514.
 
-а) с помощью firewalld:
+Р°) СЃ РїРѕРјРѕС‰СЊСЋ firewalld:
 
 firewall-cmd --permanent --add-port=514/{tcp,udp}
 
 firewall-cmd --reload
 
-Проверяем, работает ли в нашей системе SELinux:
+РџСЂРѕРІРµСЂСЏРµРј, СЂР°Р±РѕС‚Р°РµС‚ Р»Рё РІ РЅР°С€РµР№ СЃРёСЃС‚РµРјРµ SELinux:
 
 getenforce
 
-Если мы получаем в ответ:
+Р•СЃР»Рё РјС‹ РїРѕР»СѓС‡Р°РµРј РІ РѕС‚РІРµС‚:
 
 Enforcing
 
-... необходимо либо настроить SELinux:
+... РЅРµРѕР±С…РѕРґРёРјРѕ Р»РёР±Рѕ РЅР°СЃС‚СЂРѕРёС‚СЊ SELinux:
 
 semanage port -m -t syslogd_port_t -p tcp 514
 
 semanage port -m -t syslogd_port_t -p udp 514
 
-... либо отключить его командами:
+... Р»РёР±Рѕ РѕС‚РєР»СЋС‡РёС‚СЊ РµРіРѕ РєРѕРјР°РЅРґР°РјРё:
 
 setenforce 0
 
 sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
 
-Установка и запуск rsyslog
+РЈСЃС‚Р°РЅРѕРІРєР° Рё Р·Р°РїСѓСЃРє rsyslog
 
 apt-get install rsyslog
 
-После установки разрешаем автозапуск службы и стартуем ее:
+РџРѕСЃР»Рµ СѓСЃС‚Р°РЅРѕРІРєРё СЂР°Р·СЂРµС€Р°РµРј Р°РІС‚РѕР·Р°РїСѓСЃРє СЃР»СѓР¶Р±С‹ Рё СЃС‚Р°СЂС‚СѓРµРј РµРµ:
 
 systemctl enable rsyslog
 
@@ -46,7 +46,7 @@ systemctl start rsyslog
 
 vi /etc/rsyslog.conf
 
-Снимаем комментарии со следующих строк:
+РЎРЅРёРјР°РµРј РєРѕРјРјРµРЅС‚Р°СЂРёРё СЃРѕ СЃР»РµРґСѓСЋС‰РёС… СЃС‚СЂРѕРє:
 
 $ModLoad imudp
 $UDPServerRun 514
@@ -54,13 +54,13 @@ $UDPServerRun 514
 $ModLoad imtcp
 $InputTCPServerRun 514
 
-После добавляем в конфигурационный файл строки:
+РџРѕСЃР»Рµ РґРѕР±Р°РІР»СЏРµРј РІ РєРѕРЅС„РёРіСѓСЂР°С†РёРѕРЅРЅС‹Р№ С„Р°Р№Р» СЃС‚СЂРѕРєРё:
 
 $template RemoteLogs,"/var/log/rsyslog/%HOSTNAME%/%PROGRAMNAME%.log"
 *.* ?RemoteLogs
 & ~
 
-Перезапускаем службу логов:
+РџРµСЂРµР·Р°РїСѓСЃРєР°РµРј СЃР»СѓР¶Р±Сѓ Р»РѕРіРѕРІ:
 
 systemctl restart rsyslog
 

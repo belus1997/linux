@@ -1,0 +1,56 @@
+sudo apt-get update
+sudo apt-get install munin
+sudo apt-get install munin-node
+
+nano /etc/munin/munin.conf
+
+Для этого в секции конфигурационного файла "# a simple host tree" отредактируем строку
+
+[localhost.localdomain]
+Имя хоста можно указать, например, так:
+
+[srv-01.example.com]
+
+nano /etc/munin/munin-node.conf
+
+В файле нужно найти строку
+
+#host_name localhost.localdomain
+Она нужна для того, чтобы изменить имя хоста. Именно её потребуется отредактировать — например, так:
+
+host_name srv-01.example.com
+
+Управление плагинами
+
+Чтобы посмотреть список доступных плагинов, необходимо сделать листинг директории /etc/munin/plugins
+
+ls -l /usr/share/munin/plugins/
+Для установки плагина нужно создать на него символическую ссылку.
+
+Перейдём в директорию для установленных плагинов.
+
+cd /etc/munin/plugins/
+Установим какой-нибудь плагин (в нашем примере это плагин для DNS-сервера Bind):
+
+ln -s /usr/share/munin/plugins/bind9
+После добавления всех необходимых плагинов перезапустим Munin-node для примерения изменений:
+
+service munin-node restart
+
+Настройка доступа через апач
+
+Для этого в файл виртуального хоста потребуется вставить следующие строки
+
+sudo nano /etc/apache2/sites-available/example.com.conf
+
+<Location /munin>
+    AuthType Basic
+    AuthName "Munin Statistics"
+    AuthUserFile /etc/munin/.passwd
+    Require valid-user
+</Location>
+
+После внесения изменений Apache нужно будет перезапустить:
+
+service apache2 restart
+

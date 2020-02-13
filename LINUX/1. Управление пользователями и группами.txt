@@ -1,0 +1,49 @@
+Хlogname Ц выводит им€ текущего пользовател€ (под кем залогинились)
+Хwhoami Ц выводит им€ пользовател€, соответствующее текущему действующему ID (от имени кого действует)
+Хid Ц выводит им€ насто€щего и действующего пользовател€, а также ID групп
+Хwho Ц выводит информацию о текущих залогинившихс€ пользовател€х
+Хusers Ц выводит имена пользователей, которые залогинились в данном хосте в файл
+Хfinger Ц программа дл€ просмотра информации о пользователе
+Хlast Ц список логинившихс€ пользователей
+
+—оздание пользователей mrAnderson, Morfeus с указанными свойствами
+
+useradd mrAnderson -c "Comment"
+touch /etc/skel/redpill
+touch /etc/skel/bluepill
+useradd -m Morfeus
+ls /home/Morfeus/
+
+—оздание пользователей Trinity, mrSmith с указанными свойствами
+
+useradd -s /bin/zsh Trinity
+mkdir /etc/Matrix
+cp /etc/skel/* /etc/Matrix/
+useradd -c "comment" -s /bin/false -m -k /etc/Matrix/mrSmith
+
+ƒобавление номеров телефоном пользователю
+
+mkdir /home/matrix
+usermod -l Neo -c "comment" -d /home/matrix mrAnderson
+usermod -c "comment" -s /bin/bash mrSmith
+chfn -o 911 -h 27-96-66 mrSmith
+
+Ѕлокировка пользовател€ mrSmith
+
+usermod -L mrSmith
+
+ƒополнительные способы заблокировать пользовател€:
+Хѕоставить в качестве шелла по умолчанию false
+Х¬ файле /etc/shadow вместо парол€ поставить С * Т
+Хpasswd -l username
+Х—оздать файл /etc/nologin Ц войти не сможет никто, кроме root привелегерованных пользователей
+
+јльтернативные способы изменени€ данных об учЄтных запис€х пользователей:
+Х“ри приведЄнные выше команды
+Х–едактирование файлов пользователей напр€мую
+
+–абота с группами
+
+groupadd hachers
+usermod -g hackers Neo
+usermod -n rebels hackers

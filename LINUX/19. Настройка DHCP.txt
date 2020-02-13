@@ -1,0 +1,50 @@
+sudo apt install isc-dhcp-server
+
+/etc/default/isc-dhcp-server
+
+INTERFACES="eth0"
+
+sudo vi /etc/dhcp/dhcpd.conf
+
+option domain-name "itproffi.lan";
+option domain-name-servers ns1.itproffi.lan, ns2.itproffi.lan;
+default-lease-time 3600; 
+max-lease-time 7200;
+authoritative;
+
+Теперь нужно указать подсеть, в нашем примере мы будем использовать DHCP в локальной сети 192.168.10.0/24
+
+subnet 192.168.10.0 netmask 255.255.255.0 {
+          option routers 192.168.10.1;
+          option subnet-mask 255.255.255.0;
+          option domain-search "itproffi.lan";
+          option domain-name-servers 192.168.10.1;
+          range 192.168.10.10 192.168.10.100;
+          range 192.168.10.110 192.168.10.200;
+}
+
+Настройка статических IP-адресов для машин клиентов
+
+host centos-node {
+      hardware ethernet 00:f0:m4:6y:89:0g;
+      fixed-address 192.168.10.105;
+}
+
+host fedora-node {
+       hardware ethernet 00:4g:8h:13:8h:3a;
+       fixed-address 192.168.10.106;
+}
+
+Настройка машин клиентов
+
+sudo vi /etc/network/interfaces
+
+auto eth0
+iface eth0 inet dhcp
+
+sudo systemctl restart networking
+
+----------------
+
+man dhcpd
+man dhcpd.conf

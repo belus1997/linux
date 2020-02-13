@@ -1,0 +1,36 @@
+portinstall -R logcheck
+Ќастраиваем:
+
+cat /usr/local/etc/logcheck/logcheck.conf
+#формат даты в приход€щем уведомлении
+DATE="$(date +'%Y-%m-%d %H:%M')"
+#включать хеадер и подвал в сообщении
+INTRO=1
+#уровень анализа угрозы, атаки
+REPORTLEVEL="server"
+#тут и так все пон€тно
+SENDMAILTO="admin@site.com"
+#0 - не приаттачивать репорт, а включать в содержимое письма, 1 - репорт как аттач
+MAILASATTACH=0
+#включать в subject письма домен
+FQDN=1
+#указываем путь к директории, где хран€тс€ наши настройки дл€ проверок
+RULEDIR="/usr/local/etc/logcheck"
+#subject в зависимости от уровн€ обнаруженной угрозы
+ATTACKSUBJECT="Security Alerts"
+SECURITYSUBJECT="Security Events"
+EVENTSSUBJECT="System Events"
+#и наконец, путь где будут хранитьс€ временные файлы logcheck-а
+TMP="/tmp"
+”казываем, какие логи сканировать дл€ обнаружени€ атаки (угрозы):
+
+cat /usr/local/etc/logcheck/logcheck.logfiles
+/var/log/messages
+/var/log/auth.log
+#ћожете добавить еще, по аналогии, если хотите, но помните, что на все эти файлы
+#должны быть права на чтение не ниже 644
+ ак это работает:
+ѕри установке logcheck, в системе создаетс€ новый пользователь logcheck с аналогичной группой, а также запись в cron (от имени logcheck), котора€ и будет запускать logcheck каждый день в 2 часа ночи, если хотите, можете изменить, с помощью команды:
+
+
+crontab -u logcheck -e

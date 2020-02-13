@@ -1,0 +1,23 @@
+sudo apt-get install openssh-server
+
+sudo systemctl status ssh
+
+sudo systemctl start ssh
+
+Если вы хотите получить root доступ к серверу, то вы можете попробовать войти так:
+
+ssh root@192.168.10.82
+
+или sudo nano /etc/ssh/sshd_config и PermitRootLogin yes
+
+sudo systemctl restart ssh
+
+Подключение по ssh
+
+Я подключусь к ssh-серверу с адресом 192.168.10.82  как пользователь «shovon».
+
+ssh shovon@192.168.10.82
+
+Когда вы закончите настройку, просто выполните следующую команду, чтобы закрыть соединение.
+
+exit

@@ -1,0 +1,103 @@
+Настройки сети:
+
+IP адрес роутера 192.168.1.1
+IP адрес сервера 192.168.1.10
+Имя домена nixway.loc
+
+apt-get -y install bind9 dnsutils
+
+vim /etc/bind/named.conf.options
+
+acl mynetwork {192.168.1.0/24; 127.0.0.1; };
+options {
+  directory "/var/cache/bind";
+  auth-nxdomain no;
+  forwarders {192.168.1.1; 8.8.8.8; };
+  listen-on-v6 { none; };
+  allow-query { mynetwork; };
+}; 
+
+Настройка зон
+
+vim /etc/bind/named.conf.local
+
+zone "nixway.loc" {
+    type master;
+    file "/etc/bind/zones/nixway/flz.nixway.zone";
+};
+ 
+zone "1.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/zones/nixway/rlz.nixway.zone";
+};
+
+Зона прямого просмотра
+
+vim /etc/bind/zones/nixway/flz.nixway.zone
+
+;
+; Зона прямого просмотра
+;
+$TTL 30
+$ORIGIN nixway.loc.
+ 
+@               IN      SOA     ns1.nixway.loc. admin.nixway.loc. (
+        2015050101      ; Serial
+                1d      ; Refresh
+                1h      ; Retry
+                1w      ; Expire
+                2h      ; Negative Cache TTL
+)
+
+@               IN      NS      ns1.nixway.loc.
+@               IN      NS      ns.provider.org.
+@               IN      A       192.168.1.10
+
+ns1             IN      A       192.168.1.10
+nixway.loc      IN      A       192.168.1.10
+
+www             IN      CNAME   nixway.loc.
+
+Зона обратного просмотра
+
+vim /etc/bind/zones/nixway/rlz.nixway.zone
+
+;
+; Зона обратного просмотря для nixway.loc
+;
+$TTL 30
+@               IN      SOA     ns1.nixway.loc. root.nixway.loc. (
+         201505013      ; Serial
+                1d      ; Refresh
+                1h      ; Retry
+                1w      ; Expire
+                2h      ; Negative Cache TTL
+)
+ 
+@               IN      NS      nixway.loc.
+
+10              IN      PTR     ns1.nixway.loc.
+
+Проверим файлы зон на наличие ошибок командой:
+
+named-checkconf -z
+Если ошибок нет, обновим информацию о зонах:
+
+rndc reload
+Теперь необходимо отредактировать resolv.conf:
+
+vim /etc/resolv.conf
+Приводим его в следующий вид:
+
+domain nixway.loc
+search nixway.loc
+nameserver 192.168.1.10
+nameserver 192.168.1.1
+Проверку можно сделать двумя командами:
+
+nslookup nixway.loc
+nslookup 192.168.1.10
+Которые должны выдать cледующий результат:
+
+Имя:   nixway.loc
+Address: 192.168.1.10

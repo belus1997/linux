@@ -1,0 +1,67 @@
+sudo apt install logrotate
+
+cat /etc/logrotate.d/apt
+
+/var/log/apt/term.log {
+  rotate 12
+  monthly
+  compress
+  missingok
+  notifempty
+}
+
+/var/log/apt/history.log {
+  rotate 12
+  monthly
+  compress
+  missingok
+  notifempty
+}
+
+В качестве примера настроим обновления для вымышленного веб-сервера, который пишет логи в файлы access.log и error.log,расположенные в каталоге /var/log/example-app/. Он работает от имени пользователя www-data и группы www-data.
+
+Для начала создайте новый файл с помощью текстового редактора vi:
+
+sudo vi /etc/logrotate.d/example-app
+
+/var/log/example-app/*.log {
+daily
+missingok
+rotate 14
+compress
+notifempty
+create 0640 www-data www-data
+sharedscripts
+postrotate
+systemctl reload example-app
+endscript
+}
+
+sudo logrotate /etc/logrotate.conf --debug
+
+Создание независимой конфигурации Logrotate
+
+vi /home/sammy/logrotate.conf
+
+/home/sammy/logs/*.log {
+hourly
+missingok
+rotate 24
+compress
+create
+}
+
+Сохраните внесенные изменения. Данная конфигурация будет обновлять файлы ежечасно.
+
+Далее нужно указать файл состояния для утилиты logrotate. Этот файл записывает, какое действие logrotate выполняла последний раз, когда запускалась, чтобы корректно выполнить следующее действие. Исполните команду:
+
+logrotate /home/sammy/logrotate.conf --state /home/sammy/logrotate-state --verbose
+
+cat /home/sammy/logrotate-state
+
+Чтобы Logrotate запускалась каждый час, необходимо настроить планировщик cron. Откройте crontab пользователя:
+
+crontab -e
+В конец открывшегося файла добавьте следующую строку:
+
+15 * * * * /usr/sbin/logrotate /home/sammy/logrotate.conf --state /home/sammy/logrotate-state

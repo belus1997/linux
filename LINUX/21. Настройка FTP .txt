@@ -1,0 +1,75 @@
+aptitude install vsftpd
+
+usermod -d /var/ftp ftp
+
+Удалим прежнюю директорию этого пользователя
+
+rmdir /home/ftp
+
+Теперь настроим пользователя, у которого будут права записи в корневую директорию FTP сервера:
+
+Cоздаём группу ftpuser
+
+addgroup ftpuser
+
+Создаём пользователя ftpuser, добаляем его в группу ftpuser и устанавливаем домашним каталогом директорию FTP сервера, а так же меняем пароль
+
+useradd -d /var/ftp -g ftpuser ftpuser
+passwd ftpuser
+
+Создаём директорию FTP сервера и устанавливаем права:
+
+mkdir /var/ftp
+chmod 555 /var/ftp
+chown root:ftpuser /var/ftp
+
+Создаём публичный каталог.
+
+mkdir /var/ftp/pub
+chown ftpuser:ftpuser /var/ftp/pub
+
+Конфигурационный файл vsftpd располагается в /etc/vsftpd.conf. Сделаем его резервную копию.
+
+cp /etc/vsftpd.conf /etc/vsftpd.conf_old
+
+Теперь очистим /etc/vsftpd.conf, откроем текстовым редактором:
+
+cat /dev/null > /etc/vsftpd.conf
+vim /etc/vsftpd.conf
+
+и напишем:
+
+# Запускать vsftpd в независимом режиме
+listen=YES
+# Делаем анонимный доступ
+anonymous_enable=YES
+# Анонимные входят без пароля
+no_anon_password=YES
+# Анонимные будут попадать в публичную директорию
+anon_root=/var/ftp/pub
+anon_umask=022
+# Разрешаем вход локальным пользователям с правом записи в домашних директориях
+local_enable=YES
+write_enable=YES
+local_umask=022
+# Локальные пользователи будут входить только в свои домашние каталоги
+chroot_local_user=YES
+chroot_list_enable=NO
+# Сообщения будут записываться в собственный журнал
+xferlog_enable=YES
+xferlog_file=/var/log/vsftpd.log
+
+Теперь перестартуем vsftpd:
+
+/etc/init.d/vsftpd restart
+
+Если всё работает как надо и сервер будет использоваться не только локально, то добавим ещё несколько строк после listen:
+
+# Установки публичного FTP
+max_clients=100
+max_per_ip=10
+hide_ids=YES
+idle_session_timeout=600
+data_connection_timeout=120
+dirmessage_enable=YES
+ftpd_banner=Welcome!

@@ -1,0 +1,66 @@
+Создайте пользователя nagios и группу nagcmd, которые необходимы для запуска и корректной работы nagios:
+
+sudo useradd nagios
+sudo groupadd nagcmd
+Добавьте пользователя nagios и www-data в созданную группу:
+
+sudo usermod -a -G nagcmd nagios
+sudo usermod -a -G nagcmd www-data
+
+агрузите актуальную версию продукта с помощью wget в домашний каталог:
+
+cd ~
+wget https://assets.nagios.com/downloads/nagioscore/releases/nagios-4.4.1.tar.gz
+
+Разархивируйте содержимое скачанного архива и зайдите в каталог:
+
+tar -zxvf ~/nagios-4.4.1.tar.gz
+cd nagios-4.4.1/
+
+Перед созданием Nagios запустите скрипт configure, чтобы указать пользователя и группу, которые необходимо использовать. Используйте пользователя nagios и группу nagcmd, которые были созданы ранее:
+
+./configure --with-nagios-group=nagios --with-command-group=nagcmd --with-httpd_conf=/etc/apache2/sites-enabled/
+Далее скомпилируйте Nagios:
+
+make all
+
+Теперь запустите эти команды make, чтобы установить Nagios, сценарии инициализации и файлы конфигурации по умолчанию:
+
+sudo make install
+sudo make install-init
+sudo make install-config
+sudo make install-commandmode
+sudo make install-webconf
+
+Откройте с помощью текстового редактора файл contacts.cfg:
+
+sudo vi /usr/local/nagios/etc/objects/contacts.cfg
+
+Внесите в поле email переменной contact почтовый адрес, на который будут приходить уведомления:
+
+define contact{
+contact_name nagiosadmin
+use generic-contact
+alias Nagios Admin
+email admin@1cloud.ru
+}
+
+С помощью следующей команды задайте и подтвердите пароль для администратора:
+
+sudo htpasswd -c /usr/local/nagios/etc/htpasswd.users nagiosadmin
+С помощью a2enmod включите модуль cgi для запуска cgi-скриптов:
+
+sudo a2enmod cgi
+Перезапустите apache:
+
+sudo service apache2 restart
+
+Запустите nagios:
+
+sudo systemctl start nagios
+В браузере перейдите по следующему адресу:
+
+<ip-адрес_или_домен>/nagios
+Например:
+
+111.111.111.111/nagios

@@ -1,0 +1,15 @@
+!/bin/bash
+echo "Hello world"
+
+vi script
+chmod u+x script
+./script (должен вывести)
+
+
+!/bin/bash
+string1="hello "
+string2=world
+string=$string1$string2
+echo $string
+
+то же самое

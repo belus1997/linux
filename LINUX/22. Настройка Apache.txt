@@ -1,0 +1,108 @@
+sudo apt update
+sudo apt install apache2
+
+Настройка брандмауэра
+
+sudo ufw app list
+
+Available applications:
+AIM
+Bonjour
+CIFS
+. . .
+WWW
+WWW Cache
+WWW Full
+WWW Secure
+. . .
+
+Рекомендуется включить наиболее ограничительный профиль, который все равно позволит поддерживать трафик. Поскольку вы еще не настроили SSL-сертификат, вам нужно разрешить трафик на порт 80:
+
+sudo ufw allow 'WWW'
+
+Убедитесь, что профиль включен:
+
+sudo ufw status
+
+Проверка веб-сервера
+
+sudo systemctl status apache2
+
+Чтобы открыть стандартную посадочную страницу Apache, укажите свое 
+доменное имя или IP сервера. Если у вас нет домена, укажите внешний 
+IP-адрес своего сервера. Если вы не знаете свой IP-адрес, вы можете 
+узнать его с помощью командной строки. Введите:
+
+hostname -I
+
+Чтобы остановить сервер, введите:
+
+sudo systemctl stop apache2
+
+Запустить сервер может команда:
+
+sudo systemctl start apache2
+
+Для перезапуска используйте:
+
+sudo systemctl restart apache2
+
+Настройка виртуального хоста
+
+Создайте каталог example.com, используя флаг -p для создания всех необходимых родительских каталогов:
+
+sudo mkdir -p /var/www/example.com/html
+
+Затем определите права на каталог с помощью переменной $USER:
+
+sudo chown -R $USER:$USER /var/www/example.com/html
+
+Затем создайте образец страницы index.html с помощью nano или другого редактора:
+
+nano /var/www/example.com/html/index.html
+
+Вставьте в файл:
+
+<html>
+<head>
+<title>Welcome to Example.com!</title>
+</head>
+<body>
+<h1>Success!  The example.com server block is working!</h1>
+</body>
+</html>
+
+Чтобы Apache мог обслуживать этот контент, необходимо создать файл виртуального хоста с правильными директивами
+
+sudo nano /etc/apache2/sites-available/example.com.conf
+
+вставить
+
+<VirtualHost *:80>
+ServerAdmin admin@example.com
+ServerName example.com
+ServerAlias www.example.com
+DocumentRoot /var/www/example.com/html
+ErrorLog ${APACHE_LOG_DIR}/error.log
+CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+Включите файл с помощью инструмента a2ensite:
+
+sudo a2ensite example.com.conf
+
+Отключите стандартный сайт 000-default.conf:
+
+sudo a2dissite 000-default.conf
+
+Проверьте ошибки в конфигурации:
+
+sudo apache2ctl configtest
+
+Если ошибок нет, команда вернет:
+
+Syntax OK
+
+Перезапустите Apache:
+
+sudo systemctl restart apache2

@@ -1,0 +1,66 @@
+устанавливаем и запускаем chrony
+
+apt-get install chrony
+
+systemctl enable chrony
+
+systemctl start chrony
+
+Если используется брандмауэр, необходимо открыть порты TCP/UDP 514.
+
+а) с помощью firewalld:
+
+firewall-cmd --permanent --add-port=514/{tcp,udp}
+
+firewall-cmd --reload
+
+Проверяем, работает ли в нашей системе SELinux:
+
+getenforce
+
+Если мы получаем в ответ:
+
+Enforcing
+
+... необходимо либо настроить SELinux:
+
+semanage port -m -t syslogd_port_t -p tcp 514
+
+semanage port -m -t syslogd_port_t -p udp 514
+
+... либо отключить его командами:
+
+setenforce 0
+
+sed -i 's/^SELINUX=.*/SELINUX=disabled/g' /etc/selinux/config
+
+Установка и запуск rsyslog
+
+apt-get install rsyslog
+
+После установки разрешаем автозапуск службы и стартуем ее:
+
+systemctl enable rsyslog
+
+systemctl start rsyslog
+
+vi /etc/rsyslog.conf
+
+Снимаем комментарии со следующих строк:
+
+$ModLoad imudp
+$UDPServerRun 514
+
+$ModLoad imtcp
+$InputTCPServerRun 514
+
+После добавляем в конфигурационный файл строки:
+
+$template RemoteLogs,"/var/log/rsyslog/%HOSTNAME%/%PROGRAMNAME%.log"
+*.* ?RemoteLogs
+& ~
+
+Перезапускаем службу логов:
+
+systemctl restart rsyslog
+

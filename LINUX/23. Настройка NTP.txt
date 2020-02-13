@@ -1,0 +1,78 @@
+Устанавливаем ntp сервер следующей командой:
+
+apt-get install ntp
+
+Разрешаем автозапуск и стартуем сервис:
+
+systemctl enable ntp || update-rc.d ntp defaults
+systemctl start ntp || service ntp start
+
+Настройка NTP
+Открываем файл с настройками:
+
+vi /etc/ntp.conf
+
+Настраиваем серверы, с которых наш NTP будет брать эталонное время. Например:
+
+pool ru.pool.ntp.org iburst
+server ntp2.vniiftri.ru iburst prefer
+pool 0.ubuntu.pool.ntp.org iburst
+pool 1.ubuntu.pool.ntp.org iburst
+server 127.127.1.0
+
+Настраиваем безопасность:
+
+restrict default kod notrap nomodify nopeer noquery
+restrict 192.168.0.0 mask 255.255.255.0 nomodify notrap
+restrict 127.0.0.1
+restrict ::1
+
+Настройки по умолчанию могут быть разные для IPv4 и IPv6:
+
+restrict -4 default kod notrap nomodify nopeer noquery
+restrict -6 default kod notrap nomodify nopeer noquery
+
+Перезапускаем сервис:
+
+systemctl restart ntp || service restart ntp
+
+Если используется брандмауэр, добавляем правило:
+
+iptables -I INPUT 1 -p udp --dport 123 -j ACCEPT
+
+Тестирование
+Проверить состояние получения эталонного времени можно командой:
+
+ntpq -p
+
+Проверить отдачу времени сервером можно введя команду на другом Linux:
+
+ntpdate 192.168.0.15
+
+Отобразить текущее время можно командой:
+
+date
+
+Если после синхронизации время некорректно, настраиваем правильный часовой пояс:
+
+cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+
+Настройка клиента Linux
+Для клиентов можно выбрать 2 стратегии настройки — с помощью ntp или утилиты ntpdate.
+
+NTP
+Устанавливаем ntp:
+
+Ubuntu / Debian:
+
+apt-get install ntp
+
+В настройка /etc/ntp.conf в качестве сервера оставляем только наш локальный сервер, например:
+
+server 192.168.0.15
+
+Остальные pool и server удаляем или комментируем.
+
+Перезапускаем NTP:
+
+systemctl restart ntp || service restart ntp
